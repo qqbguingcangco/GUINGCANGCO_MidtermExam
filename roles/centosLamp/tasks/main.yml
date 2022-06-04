@@ -1,0 +1,70 @@
+---
+# tasks file for centosLamp
+- name: Install httpd
+  ansible.builtin.yum:
+    name: httpd
+    state: latest
+  when: ansible_facts['distribution'] == "CentOS"
+
+- name: Run httpd
+  ansible.builtin.service:
+    name: httpd
+    state: started
+  when: ansible_facts['distribution'] == "CentOS"
+
+- name: Stop firewall
+  firewalld:
+    service: http
+    zone: public
+    permanent: yes
+    immediate: yes
+  when: ansible_facts['distribution'] == "CentOS"
+
+- name: Install mariadb
+  package:
+    name: mariadb-server
+    state: latest
+    update_cache: yes
+  when: ansible_facts['distribution'] == "CentOS"
+
+- name: Add mysql_index
+  copy:
+    content: "MySQL test"
+    dest: /var/www/html/index1.html
+    owner: root
+    group: root
+    mode: '0644'
+  register: mysql
+  when: ansible_facts['distribution'] == "CentOS"
+
+- name: Run mariadb
+  service:
+    name: mariadb
+    state: started
+  when: mysql.changed
+  when: ansible_facts['distribution'] == "CentOS"
+
+- name: Install php
+  package:
+    name:
+      - php
+      - php-mysqlnd
+    state: latest
+    update_cache: yes
+  when: ansible_facts['distribution'] == "CentOS"
+
+- name: Add php index
+  copy:
+    content: "PHP test"
+    dest: /var/www/html/index2.html
+    owner: root
+    group: root
+    mode: '0664'
+  register: php
+  when: ansible_facts['distribution'] == "CentOS"
+
+- name: Restart httpd
+  service:
+    name: httpd
+    state: restarted
+  when: ansible_facts['distribution'] == "CentOS"

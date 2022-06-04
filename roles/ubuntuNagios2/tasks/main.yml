@@ -1,0 +1,66 @@
+---
+# tasks file for ubuntuNagios2
+- name: download and extract nagios
+  unarchive:
+    src: https://sourceforge.net/projects/nagios/files/nagios-4.x/nagios-4.4.6/nagios-4.4.6.tar.gz
+    dest: /tmp
+    copy: no
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Configure nagios
+  command: ./configure --with-nagios-group=nagcmd --with-command-group=nagcmd --with-httpd_conf=/etc/apache2/sites-enabled
+  args:
+    chdir: /tmp/nagios-4.4.6
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Complie nagios make clean
+  make:
+    chdir: /tmp/nagios-4.4.6
+    target: clean
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Compile nagios make all
+  make:
+    chdir: /tmp/nagios-4.4.6
+    target: all
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Compile nagios make install
+  make: 
+    target: install
+    chdir: /tmp/nagios-4.4.6
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Complie nagios make install-init
+  make: 
+     target: install-init
+     chdir: /tmp/nagios-4.4.6
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Compile nagios make install-config
+  make:
+     target: install-config
+     chdir: /tmp/nagios-4.4.6
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Compile nagios make install-commandmode
+  make:
+     target: install-commandmode
+     chdir: /tmp/nagios-4.4.6
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Install webconf
+  make:
+     target: install-webconf
+     chdir: /tmp/nagios-4.4.6
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: a2enmod cgi
+  command: a2enmod cgi
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Restart apache2
+  service:
+      name: apache2
+      state: restarted
+  when: ansible_facts['distribution'] == "Ubuntu"

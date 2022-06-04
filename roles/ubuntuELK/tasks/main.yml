@@ -1,0 +1,30 @@
+---
+# tasks file for ubuntuELK
+- name: Install packages for ELK (Ubuntu)
+  apt:
+    name:
+      - default-jre
+      - nginx
+    state: latest
+    update_cache: yes
+  when: ansible_facts['distribution'] == 'Ubuntu'
+
+- name: Add elk apt key
+  apt_key:
+    url: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+    state: present
+  when: ansible_facts['distribution'] == 'Ubuntu'
+
+- name: Add elk repository
+  apt_repository:
+    repo: "deb https://artifacts.elastic.co/packages/7.x/apt stable main"
+    state: present
+    filename: "elasticsearch.list"
+  when: ansible_facts['distribution'] == 'Ubuntu'
+
+- name: Install elasticsearch
+  apt:
+    name: elasticsearch
+    state: latest
+    update_cache: yes
+  when: ansible_facts['distribution'] == 'Ubuntu'

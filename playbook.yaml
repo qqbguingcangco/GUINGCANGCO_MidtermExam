@@ -1,0 +1,17 @@
+---
+- hosts: CentOS
+  roles:
+    - centosELK
+    - centosGrafana
+    - centosLamp
+
+- hosts: Ubuntu
+  gather_facts: True
+  roles:
+    - ubuntuELK
+    - ubuntuNagios1
+    - ubuntuNagios2
+    - ubuntuNagios3
+    - ubuntuGrafana
+    - ubuntuLamp
+  become: true
